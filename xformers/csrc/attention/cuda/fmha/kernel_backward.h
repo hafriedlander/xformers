@@ -327,15 +327,15 @@ struct AttentionBackwardKernel {
       (ArchTag::kMinComputeCapability >= 70 &&
        cutlass::sizeof_bits<scalar_t>::value <= 16);
   static constexpr int64_t kWarpSize = 32;
-  static constexpr int64_t kBlockSizeI =
-      kSupports64x128 && kMaxK > 64 ? 128 : 64;
+  static constexpr int64_t kBlockSizeI = 64;
+  //    kSupports64x128 && kMaxK > 64 ? 128 : 64;
 
   // If this is true, we store and accumulate dK/dV in RF
   // rather than going back to gmem everytime
   static constexpr bool kIsHalf = cutlass::sizeof_bits<scalar_t>::value <= 16;
   static constexpr bool kOutputInRF = kIsHalf && kMaxK <= kBlockSizeI;
-  static constexpr bool kPreloadMmas =
-      kIsHalf && ArchTag::kMinComputeCapability >= 80 && kOutputInRF;
+  static constexpr bool kPreloadMmas = true;
+  //      kIsHalf && ArchTag::kMinComputeCapability >= 80 && kOutputInRF;
   static constexpr bool kPrologueQK = kPreloadMmas;
   static constexpr bool kPrologueGV = kPreloadMmas;
   static constexpr bool kPrologueDOV = kPreloadMmas;
@@ -343,7 +343,8 @@ struct AttentionBackwardKernel {
   static constexpr bool kPrologueGK = kPreloadMmas;
 
   // Block J
-  static constexpr int64_t kBlockSizeJ = kPreloadMmas && kMaxK > 64 ? 128 : 64;
+  static constexpr int64_t kBlockSizeJ = 64;
+  // kPreloadMmas && kMaxK > 64 ? 128 : 64;
   static constexpr int64_t kNumWarpsPerBlock =
       (kBlockSizeI * kBlockSizeJ) / (32 * 32);
 
